@@ -1,4 +1,20 @@
 
+//  __   __  _______  ______    __   __  _______  _______ 
+// |  | |  ||       ||    _ |  |  |_|  ||       ||       |
+// |  |_|  ||    ___||   | ||  |       ||    ___||  _____|
+// |       ||   |___ |   |_||_ |       ||   |___ | |_____ 
+// |       ||    ___||    __  ||       ||    ___||_____  |
+// |   _   ||   |___ |   |  | || ||_|| ||   |___  _____| |
+// |__| |__||_______||___|  |_||_|   |_||_______||_______|
+//IRHermes Power-Intermittent communication protocol
+//Version alpha 0.0.1 
+//D:3/11/17
+//
+//Created for improving humanity
+//
+//By dpatoukas@gmail.com ,	carlo.delle.donne@gmail.com
+//
+//Heavily based on the following work
 //******************************************************************************
 // IRremote
 // Version 2.0.1 June, 2015
@@ -10,18 +26,15 @@
 // http://www.arduino.cc/cgi-bin/yabb2/YaBB.pl?num=1210243556
 // Also influenced by http://zovirl.com/2008/11/12/building-a-universal-remote-with-an-arduino/
 //
-// JVC and Panasonic protocol added by Kristian Lauszus (Thanks to zenwheel and other people at the original blog post)
-// LG added by Darryl Smith (based on the JVC protocol)
-// Whynter A/C ARC-110WD added by Francesco Meschia
 //******************************************************************************
 
-#ifndef IRremote_h
-#define IRremote_h
+#ifndef IRHermes_h
+#define IRHermes_h
 
 //------------------------------------------------------------------------------
 // The ISR header contains several useful macros the user may wish to use
 //
-#include "IRremoteInt.h"
+#include "IRHermesInt.h"
 
 //------------------------------------------------------------------------------
 // Supported IR protocols
@@ -41,11 +54,6 @@ typedef
 	}
 decode_type_t;
 
-//------------------------------------------------------------------------------
-// Set DEBUG to 1 for lots of lovely debug output
-//
-//#define DEBUG  0
-//#define LITE
 //------------------------------------------------------------------------------
 // Debug directives
 //
@@ -87,18 +95,13 @@ class decode_results
 }; 
 
 //------------------------------------------------------------------------------
-// Decoded value for NEC when a repeat code is received
-//
-#define REPEAT 0xFFFFFFFF
-
-//------------------------------------------------------------------------------
 // Main class for receiving IR
 //
-class IRrecv
+class IRHermes
 {
 	public:
-		IRrecv (int recvpin) ;
-		IRrecv (int recvpin, int blinkpin);
+		IRHermes (int recvpin) ;
+		IRHermes (int recvpin, int blinkpin);
 
 		void  blink13      (int blinkflag);
 		int   fetch		   (decode_results *results);
@@ -122,10 +125,10 @@ class IRrecv
 } ;
 
 #ifdef SEND_ENABLE
-class IRsend
+class IRsendHermes
 {
 	public:
-		IRsend () { }
+		IRsendHermes () { }
 
 		void  custom_delay_usec (unsigned long uSecs);
 		void  enableIROut 		(int khz) ;

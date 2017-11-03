@@ -1,22 +1,34 @@
-#include "init.h"
+//  __   __  _______  ______    __   __  _______  _______ 
+// |  | |  ||       ||    _ |  |  |_|  ||       ||       |
+// |  |_|  ||    ___||   | ||  |       ||    ___||  _____|
+// |       ||   |___ |   |_||_ |       ||   |___ | |_____ 
+// |       ||    ___||    __  ||       ||    ___||_____  |
+// |   _   ||   |___ |   |  | || ||_|| ||   |___  _____| |
+// |__| |__||_______||___|  |_||_|   |_||_______||_______|
+//IRHermes Power-Intermittent communication protocol
+//Version alpha 0.0.1 
+//D:3/11/17
+//
+//Created for improving humanity
+//
+//By dpatoukas@gmail.com ,	carlo.delle.donne@gmail.com
+//
+//Heavily based on the following work
 //******************************************************************************
 // IRremote
 // Version 2.0.1 June, 2015
 // Copyright 2009 Ken Shirriff
 // For details, see http://arcfn.com/2009/08/multi-protocol-infrared-remote-library.html
-//
-// Modified by Paul Stoffregen <paul@pjrc.com> to support other boards and timers
+// Edited by Mitra to add new controller SANYO
 //
 // Interrupt code based on NECIRrcv by Joe Knapp
 // http://www.arduino.cc/cgi-bin/yabb2/YaBB.pl?num=1210243556
 // Also influenced by http://zovirl.com/2008/11/12/building-a-universal-remote-with-an-arduino/
 //
-// JVC and Panasonic protocol added by Kristian Lauszus (Thanks to zenwheel and other people at the original blog post)
-// Whynter A/C ARC-110WD added by Francesco Meschia
 //******************************************************************************
-
-#ifndef IRremoteint_h
-#define IRremoteint_h
+#include "init.h"
+#ifndef IRHermesint_h
+#define IRHermesint_h
 
 
 //------------------------------------------------------------------------------

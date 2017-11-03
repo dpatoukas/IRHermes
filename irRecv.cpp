@@ -1,5 +1,5 @@
-#include "IRremote.h"
-#include "IRremoteInt.h"
+#include "IRHermes.h"
+#include "IRHermesInt.h"
 
 #ifdef IR_TIMER_USE_ESP32
 hw_timer_t *timer;
@@ -11,7 +11,7 @@ void IRTimer(); // defined in IRremote.cpp
 // Returns 0 if no data ready, 1 if data ready.
 // Results of decoding are stored in results
 //
-int  IRrecv::decode (decode_results *results)
+int  IRHermes::decode (decode_results *results)
 { 
 	results->rawbuf   = irparams.rawbuf;
 	results->rawlen   = irparams.rawlen;
@@ -46,13 +46,13 @@ int  IRrecv::decode (decode_results *results)
 	return true;
 }
 
-IRrecv::IRrecv (int recvpin)
+IRHermes::IRHermes (int recvpin)
 {
 	irparams.recvpin = recvpin;
 	irparams.blinkflag = 0;
 }
 
-IRrecv::IRrecv (int recvpin, int blinkpin)
+IRHermes::IRHermes (int recvpin, int blinkpin)
 {
 	irparams.recvpin = recvpin;
 	irparams.blinkpin = blinkpin;
@@ -61,11 +61,8 @@ IRrecv::IRrecv (int recvpin, int blinkpin)
 }
 
 //Fetches the decode results structure which contains
-//the most update data from the IR
-#ifndef DEBUG
-#define DEBUG 1
-#endif
-int IRrecv::fetch(decode_results *results)
+//the most updated data from the IR
+int IRHermes::fetch(decode_results *results)
 {	
 
 	while (decode(results))
@@ -89,8 +86,6 @@ int IRrecv::fetch(decode_results *results)
 			Serial.println("/=============/");
 #endif
 			resetHRM(results);
-			results->rcvd_pos = 0;
-			results->arrived = 0;
 			return true;
 		}
 		resume();
@@ -101,7 +96,7 @@ int IRrecv::fetch(decode_results *results)
 //+=============================================================================
 // initialization
 //
-void  IRrecv::enableIRIn ( )
+void  IRHermes::enableIRIn ( )
 {	
 // Interrupt Service Routine - Fires every 50uS
 #ifdef ESP32
@@ -140,7 +135,7 @@ void  IRrecv::enableIRIn ( )
 //+=============================================================================
 // Enable/disable blinking of pin 13 on IR processing
 //
-void  IRrecv::blink13 (int blinkflag)
+void  IRHermes::blink13 (int blinkflag)
 {
 	irparams.blinkflag = blinkflag;
 	if (blinkflag)  pinMode(BLINKLED, OUTPUT) ;
@@ -149,24 +144,20 @@ void  IRrecv::blink13 (int blinkflag)
 //+=============================================================================
 // Return if receiving new IR signals
 //
-bool  IRrecv::isIdle ( )
+bool  IRHermes::isIdle ( )
 {
  return (irparams.rcvstate == STATE_IDLE || irparams.rcvstate == STATE_STOP) ? true : false;
 }
 //+=============================================================================
 // Restart the ISR state machine
 //
-void  IRrecv::resume ( )
+void  IRHermes::resume ( )
 {
 	irparams.rcvstate = STATE_IDLE;
 	irparams.rawlen = 0;
 }
 
-#ifndef DEBUG
-#define DEBUG 1
-#endif
-
-bool IRrecv::rcvedHDR(decode_results *results)
+bool IRHermes::rcvedHDR(decode_results *results)
 {	
 	#ifdef DEBUG
 	Serial.println("Check for header ");
@@ -179,7 +170,7 @@ bool IRrecv::rcvedHDR(decode_results *results)
 	return false;
 }
 
-bool IRrecv::rcvedBITS( decode_results *results)
+bool IRHermes::rcvedBITS( decode_results *results)
 {
 	#ifdef DEBUG
 	Serial.println("Check for bits and pieces");
@@ -193,7 +184,7 @@ bool IRrecv::rcvedBITS( decode_results *results)
 }
 
 
-bool IRrecv::rcvedTRL(decode_results *results)
+bool IRHermes::rcvedTRL(decode_results *results)
 {
 #ifdef DEBUG
 	Serial.println("Check for trailer");
@@ -206,7 +197,7 @@ bool IRrecv::rcvedTRL(decode_results *results)
 	return false;
 }
 
-bool IRrecv::deliverHRM(decode_results *results)
+bool IRHermes::deliverHRM(decode_results *results)
 {   
 
 #ifdef DEBUG
@@ -253,8 +244,11 @@ bool IRrecv::deliverHRM(decode_results *results)
 	return false;	
 }
 
-void IRrecv::resetHRM(decode_results *results)
+void IRHermes::resetHRM(decode_results *results)
 {
 	results->listen_state = STATE_WAITING;
 	results->buffer_pos = 0;
+	results->rcvd_pos = 0;
+	results->arrived = 0;
+
 }
