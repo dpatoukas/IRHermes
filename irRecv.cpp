@@ -62,32 +62,42 @@ IRrecv::IRrecv (int recvpin, int blinkpin)
 
 //Fetches the decode results structure which contains
 //the most update data from the IR
+#ifndef DEBUG
+#define DEBUG 1
+#endif
 int IRrecv::fetch(decode_results *results)
 {	
-	results->rcvd_pos = 0;
 
-	if (decode(results))
+	while (decode(results))
 	{	
 		if ((results->arrived == EXPECTED_MSG))
 		{	
 #ifdef DEBUG
+			Serial.println("MESSAGE ARRIVED");
+			Serial.println("/=============/");
 			Serial.print("Buffer expects:");
-			Serial.print(EXPCT_MSG);
-			Serial.print(" and contains:")
+			Serial.print(EXPECTED_MSG);
+			Serial.print(" elements and contains: ");
+			Serial.println(results->arrived);
 			for (int i = 0; i < results->arrived; i++)
-			{
+			{	
+				Serial.print("In place: ");
+				Serial.print(i);
+				Serial.print("|value: ");
 				Serial.println((unsigned long)results->rcvd_array[i]);
 			}
+			Serial.println("/=============/");
 #endif
-
+			resetHRM(results);
+			results->rcvd_pos = 0;
 			results->arrived = 0;
-			resume();
 			return true;
 		}
+		resume();
+
 	}
 	return false;
 }
-
 //+=============================================================================
 // initialization
 //
@@ -152,11 +162,14 @@ void  IRrecv::resume ( )
 	irparams.rawlen = 0;
 }
 
+#ifndef DEBUG
+#define DEBUG 1
+#endif
 
 bool IRrecv::rcvedHDR(decode_results *results)
 {	
 	#ifdef DEBUG
-	Serial.print("Check for header");
+	Serial.println("Check for header ");
 	#endif
 	if (results->listen_state == STATE_WAITING)
 	{
@@ -169,7 +182,7 @@ bool IRrecv::rcvedHDR(decode_results *results)
 bool IRrecv::rcvedBITS( decode_results *results)
 {
 	#ifdef DEBUG
-	Serial.print("Check for bits and pieces");
+	Serial.println("Check for bits and pieces");
 	#endif
 	if (results->listen_state == STATE_HDR)
 	{
@@ -182,9 +195,9 @@ bool IRrecv::rcvedBITS( decode_results *results)
 
 bool IRrecv::rcvedTRL(decode_results *results)
 {
-	#ifdef DEBUG
-	Serial.print("Check for trailer");
-	#endif
+#ifdef DEBUG
+	Serial.println("Check for trailer");
+#endif
 	if (results->listen_state == STATE_BIT)
 	{
 		return getHermesTRL(results);
@@ -195,19 +208,35 @@ bool IRrecv::rcvedTRL(decode_results *results)
 
 bool IRrecv::deliverHRM(decode_results *results)
 {   
-	#ifdef DEBUG
-	Serial.print("Trailer was detected,these data will be safely stored");
-	#endif
+
+#ifdef DEBUG
+	Serial.println("Trailer was detected,these data will be safely stored");
+#endif
+	
 	if (results->listen_state == STATE_TRAIL)
 	{
-		for (int i = 0; i <((int) results->buffer_pos); i++)
+
+#ifdef DEBUG
+	  	Serial.print("Global possition: ");
+	    Serial.println(results->rcvd_pos);
+	  	Serial.print("Arrived: ");
+	  	Serial.print(results->buffer_pos);
+	  	Serial.print(" full packet(s) ");
+	  	Serial.println("containing: ");
+#endif	
+		for (int i = 0; i <results->buffer_pos; i++)
 		{
 			results->rcvd_array[results->rcvd_pos++] = results->rcvd_buffer[i];
 			results->arrived++;
-			#ifdef DEBUG
-			  	Serial.print("Arrived:");
-			  	Serial.println((unsigned long)results->rcvd_buffer[i]);
-			 #endif
+#ifdef DEBUG
+			Serial.print("Global possition: ");
+	        Serial.println(results->rcvd_pos);
+		  	Serial.print(" ( ");
+		  	Serial.print((unsigned long)results->rcvd_buffer[i]);
+		  	Serial.print(" , ");
+		  	Serial.print(i);
+		  	Serial.println(" ) ");
+#endif
 		}
 		
 		if (results->rcvd_pos > MAX_BUFFER)
@@ -216,8 +245,8 @@ bool IRrecv::deliverHRM(decode_results *results)
 			resetHRM(results);
 			return false;
 		}
-		
-		resetHRM(results);
+
+		results->listen_state = STATE_WAITING;
 		return true;
 	}
 

@@ -23,14 +23,6 @@
 //
 #include "IRremoteInt.h"
 
-
-#define RAWBUF  256  // Maximum length of raw duration buffer
-//Number of messages until complete 
-#define EXPECTED_MSG 1
-//Size of minimum useful information packet
-#define PACKET_SIZE 32
-
-
 //------------------------------------------------------------------------------
 // Supported IR protocols
 // Each protocol you include costs memory and, during decode, costs time
@@ -82,7 +74,7 @@ class decode_results
 		decode_type_t          decode_type;  // UNKNOWN, NEC, SONY, RC5, ...
 		unsigned long          value;        // Decoded value [max 32-bits]
 		int32_t				   rcvd_array[MAX_BUFFER];
-		int16_t 			   rcvd_pos;
+		int16_t 			   rcvd_pos = 0;
 		int16_t				   arrived;      //successfully arrived messages 
 		int                    bits;         // Number of bits in decoded value
 		volatile unsigned int  *rawbuf;      // Raw intervals in 50uS ticks

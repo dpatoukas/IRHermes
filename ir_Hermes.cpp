@@ -1,8 +1,6 @@
 #include "IRremote.h"
 #include "IRremoteInt.h"
 
-//#define HERMES
-//#define HERMES_BITS 32
 #define HERMES_HDR_MARK 4500
 #define HERMES_HDR_MARK 4500
 #define HERMES_BIT_MARK 590

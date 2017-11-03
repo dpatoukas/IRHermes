@@ -1,3 +1,4 @@
+#include "init.h"
 //******************************************************************************
 // IRremote
 // Version 2.0.1 June, 2015
@@ -16,6 +17,7 @@
 
 #ifndef IRremoteint_h
 #define IRremoteint_h
+
 
 //------------------------------------------------------------------------------
 // Include the right Arduino header
@@ -40,12 +42,6 @@
 //------------------------------------------------------------------------------
 // Information for the Interrupt Service Routine
 //
-#define RAWBUF  256  // Maximum length of raw duration buffer
-//Number of messages until complete 
-#define EXPECTED_MSG 1
-//Size of minimum useful information packet
-#define PACKET_SIZE 32
-
 
 typedef
 	struct {
@@ -68,7 +64,7 @@ irparams_t;
 #define STATE_STOP      5
 #define STATE_OVERFLOW  6
 
-// ISR State-Machine : Receiver States
+// Parsing State-Machine : Receiver States
 #define STATE_WAITING   2
 #define STATE_HDR      	3
 #define STATE_BIT     	4
@@ -76,12 +72,6 @@ irparams_t;
 #define STATE_SAVE	  	6
 #define STATE_OVER      7
 
-#define MAX_BUFFER 32
-//#define DEBUG 0
-#define SEND_ENABLE 1
-
-#define DECODE_HERMES		 1
-#define SEND_HERMES 		 1
 // Allow all parts of the code access to the ISR data
 // NB. The data can be changed by the ISR at any time, even mid-function
 // Therefore we declare it as "volatile" to stop the compiler/CPU caching it
