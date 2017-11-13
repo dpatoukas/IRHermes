@@ -83,7 +83,7 @@ class decode_results
 		unsigned long          value;        // Decoded value [max 32-bits]
 		int32_t				   rcvd_array[MAX_BUFFER];
 		int16_t 			   rcvd_pos = 0;
-		int16_t				   arrived;      //successfully arrived messages 
+		int16_t				   arrived = 0;      //successfully arrived messages 
 		int                    bits;         // Number of bits in decoded value
 		volatile unsigned int  *rawbuf;      // Raw intervals in 50uS ticks
 		int                    rawlen;       // Number of records in rawbuf

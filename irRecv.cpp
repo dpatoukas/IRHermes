@@ -6,6 +6,7 @@ hw_timer_t *timer;
 void IRTimer(); // defined in IRremote.cpp
 #endif
 
+#define DEBUG 1
 //+=============================================================================
 // Decodes the received IR message
 // Returns 0 if no data ready, 1 if data ready.
@@ -67,6 +68,8 @@ int IRHermes::fetch(decode_results *results)
 
 	while (decode(results))
 	{	
+		Serial.println("Msgs Arrived:");
+		Serial.println((int16_t) results->arrived);
 		if ((results->arrived == EXPECTED_MSG))
 		{	
 #ifdef DEBUG
@@ -223,7 +226,7 @@ bool IRHermes::deliverHRM(decode_results *results)
 			Serial.print("Global possition: ");
 	        Serial.println(results->rcvd_pos);
 		  	Serial.print(" ( ");
-		  	Serial.print((unsigned long)results->rcvd_buffer[i]);
+		  	Serial.print((int32_t)results->rcvd_buffer[i]);
 		  	Serial.print(" , ");
 		  	Serial.print(i);
 		  	Serial.println(" ) ");

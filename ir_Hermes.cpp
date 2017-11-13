@@ -9,9 +9,9 @@
 #define HERMES_HDR_MARK 4500
 #define HERMES_HDR_MARK 4500
 /*BODY*/
-#define HERMES_BIT_MARK 590
-#define HERMES_ONE_SPACE 1690
-#define HERMES_ZERO_SPACE 590
+#define HERMES_BIT_MARK 579
+#define HERMES_ONE_SPACE 1684
+#define HERMES_ZERO_SPACE 579
 /*TAIL*/
 #define HERMES_TRAILER_SPACE 3000
 /*
@@ -88,6 +88,8 @@ bool IRHermes::getHermesBITS(decode_results *results)
 	int count = 0;
 	results->buffer_pos = 0;
 
+	static uint32_t pointer = 1;
+
 	while(results->current_pos < (2 * HERMES_MAX_BIT_MSG) + 4)
 	{
 
@@ -95,13 +97,16 @@ bool IRHermes::getHermesBITS(decode_results *results)
 		
 		if      (MATCH_SPACE(results->rawbuf[results->current_pos], HERMES_ONE_SPACE))
 		{
-			data = (data << 1) | 1 ;
+			data |= pointer;
+			pointer <<= 1; 
+			//data = (data << 1) | 1 ;
 			count++;
 		
 		}   
 		else if (MATCH_SPACE(results->rawbuf[results->current_pos], HERMES_ZERO_SPACE))
 		{
-			data = (data << 1) | 0 ;
+			pointer <<= 1;
+			//data = (data << 1) | 0 ;
 			count++; 
 
 		}else	return false ;
@@ -115,6 +120,7 @@ bool IRHermes::getHermesBITS(decode_results *results)
 			results->rcvd_buffer[results->buffer_pos++] = data;
 			count = 0;
 			data = 0;
+			pointer = 1;
 		}
 	    
 	    if (MATCH_MARK(results->rawbuf[results->current_pos], HERMES_TRAILER_SPACE))

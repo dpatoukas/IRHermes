@@ -28,7 +28,7 @@
 //******************************************************************************
 
 //Number of messages for complete transmission 
-#define EXPECTED_MSG 5
+#define EXPECTED_MSG 16
 
 //Size of minimum useful information packet
 #define PACKET_SIZE 32
