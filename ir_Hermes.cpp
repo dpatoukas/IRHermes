@@ -7,7 +7,6 @@
 */
 /*HEAD*/
 #define HERMES_HDR_MARK 4500
-#define HERMES_HDR_MARK 4500
 /*BODY*/
 #define HERMES_BIT_MARK 579
 #define HERMES_ONE_SPACE 1684
@@ -62,16 +61,13 @@ void  IRsendHermes::sendHermes (unsigned long data,  int nbits)
 //Look for the Header of the message
 bool IRHermes::getHermesHDR(decode_results *results)
 { 	
+	
 	results->current_pos = 1;  // Skip first space
 
 	if (!MATCH_MARK(results->rawbuf[results->current_pos], HERMES_HDR_MARK))   return false ;
 	results->current_pos++;
 
-	// if (irparams.rawlen > (2 * HERMES_MAX_BIT_MSG) + 4)
-	// {
-	// 	results->overflow = 1;
-	// 	return false ;	
-	// } 
+	//TODO:Add overflow protection
 
 	// Initial space
 	if (!MATCH_SPACE(results->rawbuf[results->current_pos++], HERMES_HDR_MARK))  return false ;
@@ -93,29 +89,18 @@ bool IRHermes::getHermesBITS(decode_results *results)
 	while(results->current_pos < ((2 * HERMES_MAX_BIT_MSG) + 4)*EXPECTED_RESULTS ) 
 	{
 
-		// Serial.print("Current position in rawbuf: ");
-		// Serial.println(results->current_pos);
-
 		if (!MATCH_MARK(results->rawbuf[results->current_pos++], HERMES_BIT_MARK))  return false ;
 		
 		if      (MATCH_SPACE(results->rawbuf[results->current_pos], HERMES_ONE_SPACE))
 		{
 			data |= pointer;
 			pointer <<= 1; 
-			//data = (data << 1) | 1 ;
 			count++;
-			// Serial.print(count);
-			// Serial.print(" : ");
-			// Serial.println("ONE FOUND");
 		}   
 		else if (MATCH_SPACE(results->rawbuf[results->current_pos], HERMES_ZERO_SPACE))
 		{
 			pointer <<= 1;
-			//data = (data << 1) | 0 ;
 			count++; 
-			// Serial.print(count);
-			// Serial.print(" : ");
-			// Serial.println("ZERO FOUND");
 		
 		}else	return false ;
 
@@ -124,7 +109,6 @@ bool IRHermes::getHermesBITS(decode_results *results)
 		//if received one whole packet -> save it to the buffer
 		if (count == PACKET_SIZE)
 		{	
-			//Serial.println("Found One 32bit payload");
 			//TODO:Add overflow protection
 			results->rcvd_buffer[results->buffer_pos++] = data;
 			count = 0;

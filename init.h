@@ -37,10 +37,10 @@
 #define PACKET_SIZE 32
 
 //Buffer to hold and collect the received information
-#define MAX_BUFFER EXPECTED_DATA //EXPECTED_RESULTS*EXPECTED_MSG   //CAUTION:memory consumption
+#define MAX_BUFFER EXPECTED_DATA //CAUTION:memory consumption
 #define MAX_CHUNK_BUFFER 8
+
 //Buffer on the receiving ISR state machine
-//#define RAWBUF  250  // Maximum length of raw duration buffer
 #define RAWBUF 520
 
 //Sending and receiving behavior
@@ -52,5 +52,5 @@
 //------------------------------------------------------------------------------
 // Set DEBUG to 1 for lots of lovely debug output
 //
-#define DEBUG 0
+#define DEBUG 1
 #undef DEBUG
