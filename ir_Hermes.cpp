@@ -17,7 +17,7 @@
 /*
 *-----------------------------------------------------------------------------------------------------------
 */
-#define HERMES_MAX_BIT_MSG	32
+#define HERMES_MAX_BIT_MSG	64
 
 
 
@@ -67,15 +67,15 @@ bool IRHermes::getHermesHDR(decode_results *results)
 	if (!MATCH_MARK(results->rawbuf[results->current_pos], HERMES_HDR_MARK))   return false ;
 	results->current_pos++;
 
-	if (irparams.rawlen > (2 * HERMES_MAX_BIT_MSG) + 4)
-	{
-		results->overflow = 1;
-		return false ;	
-	} 
+	// if (irparams.rawlen > (2 * HERMES_MAX_BIT_MSG) + 4)
+	// {
+	// 	results->overflow = 1;
+	// 	return false ;	
+	// } 
 
 	// Initial space
 	if (!MATCH_SPACE(results->rawbuf[results->current_pos++], HERMES_HDR_MARK))  return false ;
-
+	
 	results->listen_state = STATE_HDR;
 	return true;
 }
@@ -88,10 +88,13 @@ bool IRHermes::getHermesBITS(decode_results *results)
 	int count = 0;
 	results->buffer_pos = 0;
 
-	static uint32_t pointer = 1;
+	uint32_t pointer = 1;
 
-	while(results->current_pos < (2 * HERMES_MAX_BIT_MSG) + 4)
+	while(results->current_pos < ((2 * HERMES_MAX_BIT_MSG) + 4)*EXPECTED_RESULTS ) 
 	{
+
+		// Serial.print("Current position in rawbuf: ");
+		// Serial.println(results->current_pos);
 
 		if (!MATCH_MARK(results->rawbuf[results->current_pos++], HERMES_BIT_MARK))  return false ;
 		
@@ -101,14 +104,19 @@ bool IRHermes::getHermesBITS(decode_results *results)
 			pointer <<= 1; 
 			//data = (data << 1) | 1 ;
 			count++;
-		
+			// Serial.print(count);
+			// Serial.print(" : ");
+			// Serial.println("ONE FOUND");
 		}   
 		else if (MATCH_SPACE(results->rawbuf[results->current_pos], HERMES_ZERO_SPACE))
 		{
 			pointer <<= 1;
 			//data = (data << 1) | 0 ;
 			count++; 
-
+			// Serial.print(count);
+			// Serial.print(" : ");
+			// Serial.println("ZERO FOUND");
+		
 		}else	return false ;
 
 		results->current_pos++;
@@ -116,6 +124,7 @@ bool IRHermes::getHermesBITS(decode_results *results)
 		//if received one whole packet -> save it to the buffer
 		if (count == PACKET_SIZE)
 		{	
+			//Serial.println("Found One 32bit payload");
 			//TODO:Add overflow protection
 			results->rcvd_buffer[results->buffer_pos++] = data;
 			count = 0;
@@ -125,6 +134,8 @@ bool IRHermes::getHermesBITS(decode_results *results)
 	    
 	    if (MATCH_MARK(results->rawbuf[results->current_pos], HERMES_TRAILER_SPACE))
 		{	
+			
+			//Serial.println("FOUND TRAILER START");
 			break;
 		}
 	}

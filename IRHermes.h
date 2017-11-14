@@ -46,13 +46,13 @@
 // An enumerated list of all supported formats
 // You do NOT need to remove entries from this list when disabling protocols!
 //
-typedef
-	enum {
-		UNKNOWN      = -1,
-		UNUSED       =  0,
-		HERMES,
-	}
-decode_type_t;
+// typedef
+// 	enum {
+// 		UNKNOWN      = -1,
+// 		UNUSED       =  0,
+// 		HERMES,
+// 	}
+// decode_type_t;
 
 //------------------------------------------------------------------------------
 // Debug directives
@@ -79,8 +79,8 @@ class decode_results
 {
 	//TODO:check data types
 	public:
-		decode_type_t          decode_type;  // UNKNOWN, NEC, SONY, RC5, ...
-		unsigned long          value;        // Decoded value [max 32-bits]
+		//decode_type_t          decode_type;  // UNKNOWN, NEC, SONY, RC5, ...
+		//unsigned long          value;        // Decoded value [max 32-bits]
 		int32_t				   rcvd_array[MAX_BUFFER];
 		int16_t 			   rcvd_pos = 0;
 		int16_t				   arrived = 0;      //successfully arrived messages 
@@ -90,7 +90,7 @@ class decode_results
 		int                    overflow;     // true if IR raw code too long
 		int 				   listen_state; // state of listener 
 		int16_t				   current_pos;  //current position in buffer to be checked
-		int32_t 			   rcvd_buffer[MAX_BUFFER];
+		int32_t 			   rcvd_buffer[MAX_CHUNK_BUFFER];
 		int16_t				   buffer_pos;
 }; 
 

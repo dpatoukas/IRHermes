@@ -6,7 +6,8 @@ hw_timer_t *timer;
 void IRTimer(); // defined in IRremote.cpp
 #endif
 
-#define DEBUG 1
+#define DEBUG 0
+#undef DEBUG
 //+=============================================================================
 // Decodes the received IR message
 // Returns 0 if no data ready, 1 if data ready.
@@ -21,6 +22,7 @@ int  IRHermes::decode (decode_results *results)
 	if (irparams.rcvstate != STATE_STOP)  return false ;
 
 	results->listen_state = STATE_WAITING;
+	
 	//Check for HDR
 	if(!rcvedHDR(results)) {
 		resume();
@@ -69,8 +71,9 @@ int IRHermes::fetch(decode_results *results)
 	while (decode(results))
 	{	
 		Serial.println("Msgs Arrived:");
-		Serial.println((int16_t) results->arrived);
-		if ((results->arrived == EXPECTED_MSG))
+		Serial.println(results->arrived);
+		//if (results->arrived == EXPECTED_RESULTS*EXPECTED_MSG)
+		if (results->arrived == EXPECTED_DATA)
 		{	
 #ifdef DEBUG
 			Serial.println("MESSAGE ARRIVED");
@@ -79,16 +82,17 @@ int IRHermes::fetch(decode_results *results)
 			Serial.print(EXPECTED_MSG);
 			Serial.print(" elements and contains: ");
 			Serial.println(results->arrived);
-			for (int i = 0; i < results->arrived; i++)
-			{	
-				Serial.print("In place: ");
-				Serial.print(i);
-				Serial.print("|value: ");
-				Serial.println((unsigned long)results->rcvd_array[i]);
-			}
+			// for (int i = 0; i < results->arrived; i++)
+			// {	
+			// 	Serial.print("In place: ");
+			// 	Serial.print(i);
+			// 	Serial.print("|value: ");
+			// 	Serial.println((unsigned long)results->rcvd_array[i]);
+			// }
 			Serial.println("/=============/");
 #endif
 			resetHRM(results);
+			resume();
 			return true;
 		}
 		resume();
@@ -235,6 +239,8 @@ bool IRHermes::deliverHRM(decode_results *results)
 		
 		if (results->rcvd_pos > MAX_BUFFER)
 		{
+			Serial.print("OVERFLOW rcvd_pos: ");
+			Serial.println(results->rcvd_pos);
 			results->listen_state = STATE_OVER;
 			resetHRM(results);
 			return false;

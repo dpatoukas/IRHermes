@@ -137,6 +137,7 @@ ISR (TIMER_INTR_NAME)
 
 	irparams.timer++;  // One more 50uS tick
 	if (irparams.rawlen >= RAWBUF)  irparams.rcvstate = STATE_OVERFLOW ;  // Buffer overflow
+	
 	switch(irparams.rcvstate) {
 		//......................................................................
 		case STATE_IDLE: // In the middle of a gap
@@ -183,6 +184,8 @@ ISR (TIMER_INTR_NAME)
 		 	break;
 		//......................................................................
 		case STATE_OVERFLOW:  // Flag up a read overflow; Stop the State Machine
+			Serial.print("OVERFLOW Hardware LAYER : ");
+			Serial.println(irparams.rawlen);
 			irparams.overflow = true;
 			irparams.rcvstate = STATE_STOP;
 		 	break;

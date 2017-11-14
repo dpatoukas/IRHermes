@@ -28,17 +28,20 @@
 //******************************************************************************
 
 //Number of messages for complete transmission 
-#define EXPECTED_MSG 16
+#define EXPECTED_DATA 128
+
+#define EXPECTED_MSG 1
+#define EXPECTED_RESULTS 8 //In each message
 
 //Size of minimum useful information packet
 #define PACKET_SIZE 32
 
 //Buffer to hold and collect the received information
-#define MAX_BUFFER EXPECTED_MSG   //CAUTION:memory consumption
-
+#define MAX_BUFFER EXPECTED_DATA //EXPECTED_RESULTS*EXPECTED_MSG   //CAUTION:memory consumption
+#define MAX_CHUNK_BUFFER 16
 //Buffer on the receiving ISR state machine
-#define RAWBUF  128  // Maximum length of raw duration buffer
-
+//#define RAWBUF  250  // Maximum length of raw duration buffer
+#define RAWBUF 1030
 
 //Sending and receiving behavior
 
@@ -49,5 +52,5 @@
 //------------------------------------------------------------------------------
 // Set DEBUG to 1 for lots of lovely debug output
 //
-#define DEBUG 
+#define DEBUG 0
 #undef DEBUG
