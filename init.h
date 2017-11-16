@@ -28,7 +28,7 @@
 //******************************************************************************
 
 //Number of messages for complete transmission 
-#define EXPECTED_DATA 128
+#define EXPECTED_DATA 8
 
 #define EXPECTED_MSG 1
 #define EXPECTED_RESULTS 8 //In each message
@@ -41,7 +41,7 @@
 #define MAX_CHUNK_BUFFER 8
 
 //Buffer on the receiving ISR state machine
-#define RAWBUF 520
+#define RAWBUF 340
 
 //Sending and receiving behavior
 

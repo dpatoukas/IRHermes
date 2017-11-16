@@ -20,12 +20,24 @@ int  IRHermes::decode (decode_results *results)
 	if (irparams.rcvstate != STATE_STOP)  return false ;
 
 	results->listen_state = STATE_WAITING;
-	
 	//Check for HDR
 	if(!rcvedHDR(results)) {
 		resume();
 		return false;
 	}
+
+	if(!rcvedSEQ(results)) {
+		resume();
+		resetHRM(results);
+		return false;
+	}
+
+	if(!is_valid(results)){
+		resume();
+		resetHRM(results);
+		return false;
+	}
+
 	//Check for bits 
 	if(!rcvedBITS(results)) {
 		resume();
@@ -169,12 +181,25 @@ bool IRHermes::rcvedHDR(decode_results *results)
 	return false;
 }
 
+bool IRHermes::rcvedSEQ(decode_results *results)
+{	
+	#ifdef DEBUG
+	Serial.println("Check for sequence ");
+	#endif
+	if (results->listen_state == STATE_HDR)
+	{
+		return getHermesSEQ(results);
+	}
+
+	return false;
+}
+
 bool IRHermes::rcvedBITS( decode_results *results)
 {
 	#ifdef DEBUG
 	Serial.println("Check for bits and pieces");
 	#endif
-	if (results->listen_state == STATE_HDR)
+	if (results->listen_state == STATE_SEQ)
 	{
 		return getHermesBITS(results);
 	}
@@ -205,38 +230,34 @@ bool IRHermes::deliverHRM(decode_results *results)
 	
 	if (results->listen_state == STATE_TRAIL)
 	{
+	
+	  	results->previous_pos = results->rcvd_pos;
+	  	results->previous_arr = results->arrived;
 
-#ifdef DEBUG
-	  	Serial.print("Global possition: ");
-	    Serial.println(results->rcvd_pos);
-	  	Serial.print("Arrived: ");
-	  	Serial.print(results->buffer_pos);
-	  	Serial.print(" full packet(s) ");
-	  	Serial.println("containing: ");
-#endif	
 		for (int i = 0; i <results->buffer_pos; i++)
 		{
 			results->rcvd_array[results->rcvd_pos++] = results->rcvd_buffer[i];
 			results->arrived++;
-#ifdef DEBUG
-			Serial.print("Global possition: ");
-	        Serial.println(results->rcvd_pos);
-		  	Serial.print(" ( ");
-		  	Serial.print((int32_t)results->rcvd_buffer[i]);
-		  	Serial.print(" , ");
-		  	Serial.print(i);
-		  	Serial.println(" ) ");
-#endif
+			// Serial.print("(rcvd_pos , arrived) = (");
+			// Serial.print(results->rcvd_pos);
+			// Serial.print(" , ");
+			// Serial.print(results->arrived);
+			// Serial.println(" )");
 		}
+
 		
 		if (results->rcvd_pos > MAX_BUFFER)
-		{
-			Serial.print("overflow");
+		{	
+
+			Serial.println("DLVR OVFL");
+			Serial.println(results->rcvd_pos);
 			results->listen_state = STATE_OVER;
 			resetHRM(results);
 			return false;
 		}
 
+		results->previous_seq = results->current_seq;
+		vld_t.last_valid = results->previous_seq;
 		results->listen_state = STATE_WAITING;
 		return true;
 	}
@@ -251,4 +272,46 @@ void IRHermes::resetHRM(decode_results *results)
 	results->rcvd_pos = 0;
 	results->arrived = 0;
 
+	results->previous_arr = 0;
+	results->previous_pos = 0;
+	results->previous_seq = 0;
+
+	vld_t.lock = 0;
+	vld_t.last_valid = 0;
+	vld_t.cand = 0;
+}
+
+bool IRHermes::is_valid(decode_results *results)
+{
+	
+	switch (vld_t.lock){
+
+		case 0: 
+			if ((results->rcvd_pos == 0) && (results->current_seq == 0))
+			{
+				//Serial.println("TX");
+				vld_t.lock 		= 1;
+				vld_t.last_valid 	= 0;
+				return true;
+			}
+		case 1:
+			if ((vld_t.cand == vld_t.last_valid + 1) || (vld_t.cand == vld_t.last_valid)) 
+			{
+				return true;
+			}
+		
+		default:
+			// if (vld_t.cand - vld_t.last_valid > 1)
+			// {
+			// 	//Serial.println("!1");
+			// }
+			// if (vld_t.cand - vld_t.last_valid < 0)
+			// {
+			// 	//Serial.print("!0");
+			// }
+			//Serial.println("lock");
+			vld_t.lock = 0;
+			resetHRM(results);
+			return false;
+	}
 }

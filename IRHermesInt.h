@@ -69,6 +69,16 @@ typedef
 	}
 irparams_t;
 
+typedef struct vld_table
+{	
+	uint8_t lock = 0;
+	uint8_t last_valid;
+	uint8_t cand;
+	
+}vld_table;
+
+EXTERN  volatile vld_table vld_t;
+
 // ISR State-Machine : Receiver States
 #define STATE_IDLE      2
 #define STATE_MARK      3
@@ -78,6 +88,7 @@ irparams_t;
 
 // Parsing State-Machine : Receiver States
 #define STATE_WAITING   2
+#define STATE_SEQ		8
 #define STATE_HDR      	3
 #define STATE_BIT     	4
 #define STATE_TRAIL     5

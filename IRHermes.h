@@ -81,7 +81,7 @@ class decode_results
 	public:
 		//decode_type_t          decode_type;  // UNKNOWN, NEC, SONY, RC5, ...
 		//unsigned long          value;        // Decoded value [max 32-bits]
-		int32_t				   rcvd_array[MAX_BUFFER];
+		uint32_t			rcvd_array[MAX_BUFFER];
 		int16_t 			   rcvd_pos = 0;
 		int16_t				   arrived = 0;      //successfully arrived messages 
 		int                    bits;         // Number of bits in decoded value
@@ -90,7 +90,11 @@ class decode_results
 		int                    overflow;     // true if IR raw code too long
 		int 				   listen_state; // state of listener 
 		int16_t				   current_pos;  //current position in buffer to be checked
-		int32_t 			   rcvd_buffer[MAX_CHUNK_BUFFER];
+		int16_t				   previous_pos = 0;
+		uint8_t				   current_seq  = 0;
+		uint8_t				   previous_seq = 0;
+		int16_t 			   previous_arr = 0;
+		uint32_t 			   rcvd_buffer[MAX_CHUNK_BUFFER];
 		int16_t				   buffer_pos;
 }; 
 
@@ -109,15 +113,20 @@ class IRHermes
 		void  resume       ( );
 		void  enableIRIn   ( );
 		bool  isIdle       ( );
+		bool  is_valid	   (decode_results *results);
 	private:
 		bool rcvedHDR      (decode_results *results);
 		bool rcvedBITS     (decode_results *results);
 		bool rcvedTRL 	   (decode_results *results);
+		bool rcvedSEQ 	   (decode_results *results);
 		bool getHermesHDR  (decode_results *results);
 		bool getHermesBITS (decode_results *results);
 		bool getHermesTRL  (decode_results *results);
+		bool getHermesSEQ  (decode_results *results);
 		bool deliverHRM    (decode_results *results);
 		void resetHRM      (decode_results *results);
+		void check_seq	   (decode_results *results);
+
 
 #		if DECODE_HERMES
 		bool  decodeHermes (decode_results *results);
