@@ -112,13 +112,13 @@ bool IRHermes::getHermesSEQ(decode_results *results)
 
 		if (count == HERMES_SEQUENCE_SIZE)
 		{		
-				// Serial.print(data);
-				// Serial.print(" , ");
+				//Serial.print("SEQ: ");
+				//Serial.println(data);
 				// Serial.println(results->previous_seq);
 
 			if (data < results->previous_seq)
 			{   
-				Serial.println("DR:");
+				Serial.println("DROP!");
 				//Serial.println(data);
 				//getHermesBITS(results);
 				return false;
